@@ -1,0 +1,143 @@
+---
+title: "LRTS # 1"
+author: "Upreti, Ishwor"
+date: "2/16/2022"
+output: pdf_document
+
+---
+
+# Problem 1
+**1- Use R norm function to generate  n = 100 samples**
+```{r, comment= T}
+set.seed(20)
+#total numbers of samples is 100
+
+numbers <- rnorm(n = 100, mean = 0, sd = 1.41)
+
+error_in_model <- rnorm(n = 100,mean =0, sd = 1.73)
+
+```
+
+**2- Simulate Yi from the simple linear regression model where**
+```{r}
+yi <- 2.5 + 1 * numbers + error_in_model
+```
+**3- Show the scatter plot of Y vs. X along with the true regression line.**
+```{r}
+random_fit<-lm(formula = yi~numbers)
+
+plot(numbers,yi,xlab = 'independent_variable', ylab = 'dependent_variable' )
+abline(random_fit,col=5)
+```
+
+
+# Problem-2
+
+## Part one
+
+
+**1- In R, read the data set as csv file.**
+```{r}
+library(readr)
+csv_file <- read.csv('Mortality_data.csv')
+```
+
+**2- What are the column names?**
+```{r}
+names(csv_file)
+```
+
+
+**3- How many cities are there?**
+```{r}
+length(unique(csv_file[[1]]))
+```
+
+
+**4- Given that NOx has a lot of variability, add another column to your data frame with the logarithm of NOx and named logNOx. In R, use the log function to calculate the appropriate value: log().**
+```{r}
+csv_file$logNOx <- log(csv_file[[17]])
+```
+
+
+## Part Two
+
+**1- Create a data frame with only mortality and logNOx and named it as mortality_df.**
+
+```{r}
+mortality_df <- data.frame(csv_file[[6]],csv_file[[18]])
+```
+
+
+**2- Create a dependent variable for mortality column and named y_mort.**
+
+```{r}
+y_mort <- mortality_df[[1]]  #dependent variable
+  
+```
+
+
+**3- Create an independent variable for logNOx column and named x_logNOx.**
+
+```{r}
+x_logNOx <- mortality_df[[2]] #independent variable
+```
+
+**4- Perform a simple linear regression (fit the model).**
+
+```{r}
+mortality_fit <- lm(formula = y_mort~x_logNOx)
+```
+
+**5- Display a summary about your model. **
+
+```{r}
+summary(mortality_fit)
+```
+
+**What is your R generated estimates of b1 and b0 (the intercept and slope of the regression)?**
+
+```{r}
+#get coefficients of regression
+coefficients(mortality_fit)
+```
+
+**7- Make a scatter plot with mortality plotted against logNOx including your line of best fit. **
+```{r,comment=F}
+# plot to the graph
+plot(x_logNOx, y_mort, xlab ="x_logNOx", ylab= "mortality")
+#draw abline
+abline(mortality_fit, col = 2, lwd = 4)
+```
+
+## Part Three
+**1- What is the equation of the estimate regression line?**
+   
+The equation of the estimate for the regression line is : Ÿi = 905.61317+ 15.09896*xi
+   
+   
+**2- How would you describe the relationship between mortality and the log of nitrous oxide concentrations across US cities? (1-3 sentences is fine)**
+
+There is few or lose relationship between mortality and the nitrous oxide concentration across the US Cities.
+
+
+**3- What percentage of the variation in mortality was explained by logNOx? (Recall the coefficient of determination or R2)**
+    
+ 8.7% variation in mortality is explained by logNOx.
+
+**4- How strong is the relationship between the logNOx and the mortality? (from R2 and RSE)**
+    
+  The relation ship between logNOx and the mortality is week coupled based on R^2 value.
+    
+## Part Four
+**1- Using R, use your the intercept and slope of the regression values to generate a column for “predicted mortality” based on your estimated linear regression equation. Also, calculate another column for the residuals and add it to your data frame.**
+```{r}
+mortality_df <-data.frame(y_mort, x_logNOx, predicted_mortality = predict(mortality_fit),residual =residuals(mortality_fit))
+mortality_df
+```
+```{r, comment=F}
+# Predcit value for  x_logNOx = 2.041393
+new.xlogNOx <- data.frame(x_logNOx = 2.041393)
+predict(mortality_fit, newdata = new.xlogNOx)
+```
+
